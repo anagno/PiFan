@@ -1,0 +1,29 @@
+{
+    "version": 2,
+    "configurePresets": [
+        {
+            "name": "user-settings",
+            "binaryDir": "/home/anagno/bin/pi_fan_hwpwn/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "/home/anagno/bin/pi_fan_hwpwn/install/${presetName}"
+            },
+            "hidden": true
+        },
+        {
+            "name": "RaspberryPi-arm64",
+            "inherits": "user-settings",
+            "generator": "Unix Makefiles",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/CMake/toolchain-RaspberryPi-arm64.cmake"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "RaspberryPi-arm64",
+            "configurePreset": "RaspberryPi-arm64",
+            "configuration": "Release"
+        }
+    ]
+}
