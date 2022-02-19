@@ -9,7 +9,7 @@ namespace PiFan {
 class BUSINESS_EXPORT TemperatureAdjuster
 {
 public:
-    TemperatureAdjuster(PiFanController &&controller);
+    explicit TemperatureAdjuster(PiFanController &&controller);
     ~TemperatureAdjuster() noexcept = default;
 
     TemperatureAdjuster(const TemperatureAdjuster &other) noexcept = delete;

@@ -78,7 +78,7 @@ include(GenerateExportHeader)
 include(GNUInstallDirs)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    option(ENABLE_COMPILER_WARNINGS "" ON)
+    option(ENABLE_COMPILER_WARNINGS "" OFF)
     # https://github.com/cpp-best-practices/project_options/blob/main/src/CompilerWarnings.cmake
     if(ENABLE_COMPILER_WARNINGS)
         add_compile_options(
@@ -106,6 +106,24 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             -Werror # fail to compile when there are errors
         )
     endif()
+endif()
+
+option(ENABLE_CPPCHECK "" OFF)
+if(ENABLE_CPPCHECK)
+    find_program(CPPCHECK cppcheck REQUIRED)
+    # https://github.com/cpp-best-practices/project_options/blob/7371578d79b0fbb922e29306c4cc09318adb15c5/src/StaticAnalyzers.cmake
+    set(CMAKE_CXX_CPPCHECK
+        ${CPPCHECK}
+        --template=gcc
+        --enable=style,performance,warning,portability
+        --inline-suppr
+        # We cannot act on a bug/missing feature of cppcheck
+        --suppress=internalAstError
+        # if a file does not have an internalAstError, we get an unmatchedSuppression error
+        --suppress=unmatchedSuppression
+        --inconclusive
+        --std=c++${CMAKE_CXX_STANDARD}
+        --error-exitcode=2)
 endif()
 
 add_subdirectory(src)

@@ -11,7 +11,7 @@ class PiFan(ConanFile):
 
    def set_version(self):
       content = tools.load(os.path.join(self.recipe_folder, "CMakeLists.txt"))
-      version = re.search(r"project \(PiFan VERSION (.*)\)", content).group(1)
+      version = re.search(r"project\(PiFan VERSION (.*)\)", content).group(1)
       self.version = version.strip()
 
    scm = {
@@ -62,7 +62,6 @@ class PiFan(ConanFile):
 
    def build_requirements(self):
       self.test_requires("gtest/1.11.0#8aca975046f1b60c660ee9d066764d69")
-
 
    def imports(self):
       # https://github.com/conan-io/cmake-conan/issues/27

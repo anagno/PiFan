@@ -25,7 +25,9 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "MOCK_BCM2835": true,
-                "BUILD_TESTING": true
+                "BUILD_TESTING": true,
+                "ENABLE_COMPILER_WARNINGS": true,
+                "ENABLE_CPPCHECK": true
             }
         }
     ],
