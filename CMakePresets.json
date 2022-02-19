@@ -15,7 +15,17 @@
             "generator": "Unix Makefiles",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/CMake/toolchain-RaspberryPi-arm64.cmake"
+                "HOST_NAME": "aarch64-linux-gnu"
+            }
+        },
+        {
+            "name": "RaspberryPi-native",
+            "inherits": "user-settings",
+            "generator": "Unix Makefiles",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "MOCK_BCM2835": true,
+                "BUILD_TESTING": true
             }
         }
     ],
@@ -24,6 +34,25 @@
             "name": "RaspberryPi-arm64",
             "configurePreset": "RaspberryPi-arm64",
             "configuration": "Release"
+        },
+        {
+            "name": "RaspberryPi-native",
+            "configurePreset": "RaspberryPi-native",
+            "configuration": "Release"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "RaspberryPi-native",
+            "configurePreset": "RaspberryPi-native",
+            "configuration": "Release",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error",
+                "stopOnFailure": true
+            }
         }
     ]
 }

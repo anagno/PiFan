@@ -1,0 +1,18 @@
+# pragma once
+
+#include <string>
+
+namespace PiFan
+{
+
+std::string getProjectName()
+{
+    return "@PROJECT_NAME@";
+};
+
+std::string getProjectVersion()
+{
+    return "@PROJECT_VERSION@";
+};
+
+}
