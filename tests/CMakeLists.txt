@@ -1,4 +1,4 @@
-project (PiFanTests)
+project(PiFanTests)
 
 find_package(GTest REQUIRED CONFIG)
 

@@ -1,18 +1,11 @@
-# pragma once
+#pragma once
 
 #include <string>
 
-namespace PiFan
-{
+namespace PiFan {
 
-std::string getProjectName()
-{
-    return "@PROJECT_NAME@";
-};
+std::string getProjectName() { return "@PROJECT_NAME@"; };
 
-std::string getProjectVersion()
-{
-    return "@PROJECT_VERSION@";
-};
+std::string getProjectVersion() { return "@PROJECT_VERSION@"; };
 
-}
+}// namespace PiFan

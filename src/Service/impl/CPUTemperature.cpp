@@ -2,12 +2,11 @@
 
 #include <fstream>
 
-namespace PiFan
-{
+namespace PiFan {
 
 units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> getCurrentCPUTemperature()
 {
-    auto temperature_file = std::ifstream{"/sys/class/thermal/thermal_zone0/temp", std::ios::in};
+    auto temperature_file = std::ifstream{ "/sys/class/thermal/thermal_zone0/temp", std::ios::in };
 
     // if something goes wrong just kill the program
     temperature_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -20,4 +19,4 @@ units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> getCur
     return cpu_temperature / 1000 * units::isq::si::thermodynamic_temperature_references::deg_C;
 }
 
-}  // namespace PiFan
+}// namespace PiFan

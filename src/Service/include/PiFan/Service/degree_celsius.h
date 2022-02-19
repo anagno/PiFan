@@ -6,26 +6,23 @@
 // TODO Fix when Celsius is properly supported (#232)
 // https://mpusz.github.io/units/examples/kalman_filter/example_6.html
 
-namespace units::isq::si
-{
+namespace units::isq::si {
 
-struct degree_celsius : alias_unit<kelvin, basic_symbol_text{"°C", "deg_C"}, no_prefix>
+struct degree_celsius : alias_unit<kelvin, basic_symbol_text{ "°C", "deg_C" }, no_prefix>
 {
 };
 
-namespace thermodynamic_temperature_references
-{
+namespace thermodynamic_temperature_references {
 
-inline constexpr auto deg_C = reference<dim_thermodynamic_temperature, degree_celsius>{};
-
-
-}  // namespace thermodynamic_temperature_references
-
-namespace references
-{
-
-using namespace thermodynamic_temperature_references;
+    inline constexpr auto deg_C = reference<dim_thermodynamic_temperature, degree_celsius>{};
 
 
-}  // namespace references
-}  // namespace units::isq::si
+}// namespace thermodynamic_temperature_references
+
+namespace references {
+
+    using namespace thermodynamic_temperature_references;
+
+
+}// namespace references
+}// namespace units::isq::si

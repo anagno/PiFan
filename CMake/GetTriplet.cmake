@@ -1,26 +1,19 @@
-# https://github.com/vitasdk/buildscripts/blob/master/cmake/GetTriplet.cmake
-# The MIT License (MIT)
-# 
+# https://github.com/vitasdk/buildscripts/blob/master/cmake/GetTriplet.cmake The MIT License (MIT)
+#
 # Copyright (c) 2016 codestation
-# 
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+# documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+# persons to whom the Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+# WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 function(get_host_triplet triplet)
     set(host_arch ${CMAKE_SYSTEM_PROCESSOR})
@@ -48,7 +41,9 @@ function(get_host_triplet triplet)
         message(FATAL "Unsupported system: ${CMAKE_SYSTEM_NAME}")
     endif()
 
-    set(${triplet} "${host_arch}-${host_os}-${host_release}" PARENT_SCOPE)
+    set(${triplet}
+        "${host_arch}-${host_os}-${host_release}"
+        PARENT_SCOPE)
 endfunction()
 
 function(get_build_triplet triplet)
@@ -77,5 +72,7 @@ function(get_build_triplet triplet)
         message(FATAL "Unsupported system: ${CMAKE_HOST_SYSTEM_NAME}")
     endif()
 
-    set(${triplet} "${host_arch}-${build_os}-${build_release}" PARENT_SCOPE)
+    set(${triplet}
+        "${host_arch}-${build_os}-${build_release}"
+        PARENT_SCOPE)
 endfunction()

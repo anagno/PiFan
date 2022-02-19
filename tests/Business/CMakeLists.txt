@@ -1,14 +1,11 @@
-
 add_executable(
     TemperatureAdjuster_test
-    TemperatureAdjuster_test.cpp
-  )
+    TemperatureAdjuster_test.cpp)
 
-  target_link_libraries(
-    TemperatureAdjuster_test PUBLIC
-    PiFan::Business
-    GTest::gtest_main
-  )
+target_link_libraries(
+    TemperatureAdjuster_test
+    PUBLIC PiFan::Business GTest::gtest_main)
 
-add_test(NAME TemperatureAdjuster_test
-        COMMAND TemperatureAdjuster_test)
+add_test(
+    NAME TemperatureAdjuster_test
+    COMMAND TemperatureAdjuster_test)

@@ -1,0 +1,63 @@
+format:
+  line_width: 120
+  tab_size: 4
+  max_lines_hwrap: 5
+  max_pargs_hwrap: 4
+  min_prefix_chars: 8
+  max_prefix_chars: 16
+  max_rows_cmdline: 4
+  separate_ctrl_name_with_space: false
+  separate_fn_name_with_space: false
+  dangle_parens: false
+  command_case: 'lower'
+  keyword_case: 'upper'
+  line_ending: unix
+  always_wrap: 
+    set_target_properties
+    cmake_parse_arguments
+    set_tests_properties
+    target_include_directories
+    target_sources
+    set_property
+    get_property
+    target_compile_definitions
+    target_link_libraries
+    execute_process
+    generate_export_header
+    install
+    add_custom_target
+    add_test
+    add_executable
+    add_library
+markup:
+  bullet_char: "*"
+  enum_char: .
+  enable_markup: false
+parse:
+  additional_commands:
+    conan_cmake_install:
+      pargs:
+        nargs: "*"
+        flags: []
+      kwargs:
+        BUILD: +
+        INSTALL_FOLDER: 1
+        LOCKFILE: 1
+        LOCKFILE_NODE_ID: 1
+        LOCKFILE_OUT: 1
+        PATH_OR_REFERENCE: 1
+        REFERENCE: 1
+        REMOTE: 1
+        ENV: +
+        ENV_BUILD: +
+        ENV_HOST: +
+        GENERATOR: +
+        OPTIONS: +
+        OPTIONS_BUILD: +
+        OPTIONS_HOST: +
+        PROFILE: +
+        PROFILE_BUILD: +
+        PROFILE_HOST: +
+        SETTINGS: +
+        SETTINGS_BUILD: +
+        SETTINGS_HOST: +

@@ -6,23 +6,21 @@
 #include <limits>
 #include <stdexcept>
 
-namespace
-{
+namespace {
 
 constexpr int MAX_FAN = 480;
 
-}  // namespace
+}// namespace
 
-namespace PiFan
+namespace PiFan {
+
+
+PiFanController::PiFanController() : m_pwm_level{ std::numeric_limits<int>::min() }
 {
-
-
-PiFanController::PiFanController() : m_pwm_level{std::numeric_limits<int>::min()}
-{
-    #ifdef MOCK_BCM2835
+#ifdef MOCK_BCM2835
     bcm2835_set_debug(1);
-    #endif
-    if(!bcm2835_init()) throw std::runtime_error("Unable to initialize bcm2835");
+#endif
+    if (!bcm2835_init()) throw std::runtime_error("Unable to initialize bcm2835");
 
     // two exposed GPIO pins are capable of hardware PWM (GPIO 13 and GPIO 18)
     // We use them both, so the user can connect his fan to any of these two pins
@@ -38,21 +36,17 @@ PiFanController::PiFanController() : m_pwm_level{std::numeric_limits<int>::min()
     setSpeed(FanThrottlePercent(0));
 }
 
-PiFanController::~PiFanController() noexcept
-{
-    bcm2835_close();
-}
+PiFanController::~PiFanController() noexcept { bcm2835_close(); }
 
 void PiFanController::setSpeed(FanThrottlePercent throttle)
 {
-    int level = throttle.number()/100 * MAX_FAN;
+    int level = throttle.number() / 100 * MAX_FAN;
     if (level > MAX_FAN) level = MAX_FAN;
 
-    if(level > m_pwm_level && (level - m_pwm_level) < 5) return;
-    if(level < m_pwm_level && (m_pwm_level - level) < 10) return;
+    if (level > m_pwm_level && (level - m_pwm_level) < 5) return;
+    if (level < m_pwm_level && (m_pwm_level - level) < 10) return;
 
-    if(level != m_pwm_level)
-    {
+    if (level != m_pwm_level) {
         bcm2835_pwm_set_data(1, level);
         bcm2835_pwm_set_data(0, level);
         m_pwm_level = level;
@@ -60,5 +54,4 @@ void PiFanController::setSpeed(FanThrottlePercent throttle)
 }
 
 
-
-}  // namespace PiFan
+}// namespace PiFan
