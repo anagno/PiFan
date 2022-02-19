@@ -15,7 +15,7 @@ constexpr int MAX_FAN = 480;
 namespace PiFan {
 
 
-PiFanController::PiFanController() : m_pwm_level{ std::numeric_limits<int>::min() }
+PiFanController::PiFanController() : m_pwm_level{ std::numeric_limits<unsigned int>::min() }
 {
 #ifdef MOCK_BCM2835
     bcm2835_set_debug(1);
@@ -40,7 +40,7 @@ PiFanController::~PiFanController() noexcept { bcm2835_close(); }
 
 void PiFanController::setSpeed(FanThrottlePercent throttle)
 {
-    int level = throttle.number() / 100 * MAX_FAN;
+    auto level = static_cast<unsigned int>(throttle.number() / 100 * MAX_FAN);
     if (level > MAX_FAN) level = MAX_FAN;
 
     if (level > m_pwm_level && (level - m_pwm_level) < 5) return;

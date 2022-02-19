@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 
     //////// End of parsing of the command line arguments /////////////////
 
+    /*
     auto metric_exposer = prometheus::Exposer{ "127.0.0.1:8080" };
     auto metric_registry = std::make_shared<prometheus::Registry>();
     auto &temperature_metric = prometheus::BuildGauge()
@@ -62,9 +63,11 @@ int main(int argc, char *argv[])
                                  "The speed of the fan in percentage (i.e. 100% means full "
                                  "speed and 0% the fan is stopeed")
                                .Register(*metric_registry);
+    */
 
     auto temperature = PiFan::getCurrentCPUTemperature();
     auto adjuster = PiFan::TemperatureAdjuster{ PiFan::PiFanController{} };
+
 
     while (true) {
         // It is better to use a moving average of the temperature, so we will not be

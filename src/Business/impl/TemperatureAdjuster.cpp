@@ -28,7 +28,7 @@ FanThrottlePercent TemperatureAdjuster::adjust(
         }
     };
 
-    auto state = parse_state(temperature);
+    auto current_state = parse_state(temperature);
 
     auto set_throthle = [](const State &state,
                           const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temp) {
@@ -51,7 +51,7 @@ FanThrottlePercent TemperatureAdjuster::adjust(
         }
     };
 
-    auto throttle = set_throthle(state, temperature);
+    auto throttle = set_throthle(current_state, temperature);
     m_controller.setSpeed(throttle);
     return throttle;
 }

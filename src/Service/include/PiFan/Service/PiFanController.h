@@ -27,7 +27,7 @@ public:
     void setSpeed(FanThrottlePercent throttle);
 
 private:
-    int m_pwm_level = 0;
+    unsigned int m_pwm_level = 0;
 };
 
 }// namespace PiFan
