@@ -21,6 +21,9 @@ public:
       const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temperature);
 
 private:
+    enum class State { HIGH_TEMPERATURE, RAMP_FAN, KICK_FAN_ON, LOW_TEMPERATURE };
+
+    State m_current_state;
     PiFanController m_controller;
 };
 

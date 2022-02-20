@@ -4,19 +4,22 @@
 
 namespace PiFan {
 
-enum class State { HIGH_TEMPERATURE, RAMP_FAN, KICK_FAN_ON, LOW_TEMPERATURE };
-
-constexpr auto THROTTLING_TEMP_FOR_RASP_PI = 80.0 * units::isq::si::thermodynamic_temperature_references::deg_C;
+// The Raspberry pi will start to throttle around 80 degrees. So let`s make certain that it will not throttle
+// by setting the temperature a llitle bit lower
+constexpr auto THROTTLING_TEMP_FOR_RASP_PI = 79.0 * units::isq::si::thermodynamic_temperature_references::deg_C;
 constexpr auto HIGH_TEMP_FOR_RAMPING_FAN = 73.0 * units::isq::si::thermodynamic_temperature_references::deg_C;
-constexpr auto TEMP_FOR_STARTING_THE_FAN = 68.0 * units::isq::si::thermodynamic_temperature_references::deg_C;
-constexpr auto TEMP_FOR_STOPPING_THE_FAN = 60.0 * units::isq::si::thermodynamic_temperature_references::deg_C;
+constexpr auto TEMP_FOR_STARTING_THE_FAN = 70.0 * units::isq::si::thermodynamic_temperature_references::deg_C;
+constexpr auto TEMP_FOR_STOPPING_THE_FAN = 69.0 * units::isq::si::thermodynamic_temperature_references::deg_C;
 
-TemperatureAdjuster::TemperatureAdjuster(PiFanController &&controller) : m_controller(std::move(controller)) {}
+TemperatureAdjuster::TemperatureAdjuster(PiFanController &&controller)
+  : m_current_state(State::LOW_TEMPERATURE), m_controller(std::move(controller))
+{}
 
 FanThrottlePercent TemperatureAdjuster::adjust(
   const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temperature)
 {
-    auto parse_state = [](const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temp) {
+    auto parse_state = [](const State &current_state,
+                         const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temp) {
         if (temp >= THROTTLING_TEMP_FOR_RASP_PI) {
             return State::HIGH_TEMPERATURE;
         } else if (temp >= HIGH_TEMP_FOR_RAMPING_FAN) {
@@ -24,11 +27,15 @@ FanThrottlePercent TemperatureAdjuster::adjust(
         } else if (temp >= TEMP_FOR_STARTING_THE_FAN) {
             return State::KICK_FAN_ON;
         } else {
-            return State::LOW_TEMPERATURE;
+            if (State::KICK_FAN_ON == current_state && temp >= TEMP_FOR_STOPPING_THE_FAN) {
+                return State::KICK_FAN_ON;
+            } else {
+                return State::LOW_TEMPERATURE;
+            }
         }
     };
 
-    auto current_state = parse_state(temperature);
+    auto new_state = parse_state(m_current_state, temperature);
 
     auto set_throthle = [](const State &state,
                           const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temp) {
@@ -41,7 +48,7 @@ FanThrottlePercent TemperatureAdjuster::adjust(
               (temp - TEMP_FOR_STOPPING_THE_FAN) / (THROTTLING_TEMP_FOR_RASP_PI - TEMP_FOR_STOPPING_THE_FAN));
         }
         case State::KICK_FAN_ON: {
-            return FanThrottlePercent(200);
+            return FanThrottlePercent(20);
         }
         case State::LOW_TEMPERATURE:
             [[fallthrough]];
@@ -51,7 +58,8 @@ FanThrottlePercent TemperatureAdjuster::adjust(
         }
     };
 
-    auto throttle = set_throthle(current_state, temperature);
+    auto throttle = set_throthle(new_state, temperature);
+    m_current_state = new_state;
     m_controller.setSpeed(throttle);
     return throttle;
 }
