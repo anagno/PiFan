@@ -126,6 +126,8 @@ if(ENABLE_CPPCHECK)
         --error-exitcode=2)
 endif()
 
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+
 add_subdirectory(src)
 
 # Tests https://gitlab.kitware.com/cmake/community/wikis/doc/ctest/Testing-With-CTest#dynamic-analysis
