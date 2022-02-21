@@ -25,10 +25,14 @@ public:
     PiFanController &operator=(PiFanController &&other) noexcept;
 
 
-    void setSpeed(FanThrottlePercent throttle);
+    static void setSpeed(FanThrottlePercent throttle);
 
 private:
-    unsigned int m_pwm_level = 0;
+
+    // This  variable is shared across all instances. More or less
+    // the hardware has a single m_pwn_level. Even if multiple instances
+    // change it, this should be shared
+    inline static std::atomic<unsigned int> m_pwm_level = 0;
 
     // The initialization and de-initialization has to happen once.
     // So as long as we have still an instance alive, we should not

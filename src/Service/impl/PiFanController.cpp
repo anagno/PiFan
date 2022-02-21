@@ -15,7 +15,7 @@ constexpr uint32_t MAX_FAN = 480;
 namespace PiFan {
 
 
-PiFanController::PiFanController() : m_pwm_level{ std::numeric_limits<unsigned int>::min() }
+PiFanController::PiFanController()
 {
     if (m_counter == 0) {
 #ifdef MOCK_BCM2835
@@ -39,12 +39,9 @@ PiFanController::PiFanController() : m_pwm_level{ std::numeric_limits<unsigned i
     ++m_counter;
 }
 
-PiFanController::PiFanController(PiFanController &&) noexcept
-{
-    ++m_counter;
-}
+PiFanController::PiFanController(PiFanController &&) noexcept { ++m_counter; }
 
-PiFanController & PiFanController::operator=(PiFanController &&) noexcept
+PiFanController &PiFanController::operator=(PiFanController &&) noexcept
 {
     ++m_counter;
     return *this;
@@ -53,10 +50,7 @@ PiFanController & PiFanController::operator=(PiFanController &&) noexcept
 PiFanController::~PiFanController() noexcept
 {
     --m_counter;
-    if(0 == m_counter)
-    {
-        bcm2835_close();
-    }
+    if (0 == m_counter) { bcm2835_close(); }
 }
 
 void PiFanController::setSpeed(FanThrottlePercent throttle)
