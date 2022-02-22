@@ -16,21 +16,21 @@ constexpr auto TEMP_FOR_STOPPING_THE_FAN = 69.0 * units::isq::si::thermodynamic_
 
 TemperatureAdjuster::TemperatureAdjuster(PiFanController &&controller)
   : m_current_state(State::LOW_TEMPERATURE),
-    m_current_temperature(25 * units::isq::si::thermodynamic_temperature_references::deg_C),
+    m_average_temperature(25 * units::isq::si::thermodynamic_temperature_references::deg_C),
     m_current_throttle(FanThrottlePercent(0)),
     m_controller(std::move(controller))
 {}
 
 FanThrottlePercent TemperatureAdjuster::adjust(
-  const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temperature)
+  const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &sensor_temperature)
 {
     // It is better to use a moving average of the temperature, so we will not be
     // reacting too much
-    if (m_current_temperature < temperature) {
-        m_current_temperature = 0.9 * m_current_temperature + 0.1 * temperature;
+    if (m_average_temperature < sensor_temperature) {
+        m_average_temperature = 0.9 * m_average_temperature + 0.1 * sensor_temperature;
     } else {
         // But be less reactive when reducing the temperature
-        m_current_temperature = 0.99 * m_current_temperature + 0.01 * temperature;
+        m_average_temperature = 0.99 * m_average_temperature + 0.01 * sensor_temperature;
     }
 
     constexpr auto parse_state = [](const State &current_state,
@@ -51,7 +51,7 @@ FanThrottlePercent TemperatureAdjuster::adjust(
         }
     };
 
-    auto new_state = parse_state(m_current_state, m_current_temperature);
+    auto new_state = parse_state(m_current_state, m_average_temperature);
 
     constexpr auto set_throttle = [](const State &state,
                           const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temp) {
@@ -74,7 +74,7 @@ FanThrottlePercent TemperatureAdjuster::adjust(
         }
     };
 
-    auto new_throttle = set_throttle(new_state, m_current_temperature);
+    auto new_throttle = set_throttle(new_state, m_average_temperature);
     if(units::abs(new_throttle - m_current_throttle) > FanThrottlePercent(1))
     {
         m_current_throttle = new_throttle;
