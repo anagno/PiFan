@@ -16,7 +16,7 @@ units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> getCur
 
     // The temperature is stored in 5 digits.
     // The first two are degrees in C.  The rest are decimal precision.
-    return cpu_temperature / 1000 * units::isq::si::thermodynamic_temperature_references::deg_C;
+    return double(cpu_temperature) / 1000 * units::isq::si::thermodynamic_temperature_references::deg_C;
 }
 
 }// namespace PiFan

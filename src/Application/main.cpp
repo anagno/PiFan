@@ -74,15 +74,10 @@ int main(int argc, char *argv[])
 
     metric_exposer.RegisterCollectable(metric_registry);
 
-
-    auto temperature = PiFan::getCurrentCPUTemperature();
     auto adjuster = PiFan::TemperatureAdjuster{ PiFan::PiFanController{} };
 
-
     while (true) {
-        // It is better to use a moving average of the temperature, so we will not be
-        // reacting too much
-        temperature = 0.1 * PiFan::getCurrentCPUTemperature() + 0.9 * temperature;
+        auto temperature = PiFan::getCurrentCPUTemperature();
         temperature_metric.Set(temperature.number());
 
         auto fan_throttle = adjuster.adjust(temperature);

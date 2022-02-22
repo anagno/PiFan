@@ -8,31 +8,41 @@ protected:
     AdjusterTest() : adjuster(PiFan::PiFanController{}) {}
 
     PiFan::TemperatureAdjuster adjuster;
+    PiFan::FanThrottlePercent throttle{0};
 };
 
 // Over 80 degress the raspberry stars to throttle
 // So the Fan should be running in full
 TEST_F(AdjusterTest, ActivateFullFan)
 {
-    auto fan_throttle = adjuster.adjust(80 * units::isq::si::thermodynamic_temperature_references::deg_C);
+    for(int i = 1; i<100; ++i)
+    {
+        throttle = adjuster.adjust(80 * units::isq::si::thermodynamic_temperature_references::deg_C);
+    }
 
-    EXPECT_EQ(fan_throttle, PiFan::FanThrottlePercent(100));
+    EXPECT_GT(throttle, PiFan::FanThrottlePercent(99));
 }
 
 // Under 50 degress probably does not make sense to have the
 // fan working
 TEST_F(AdjusterTest, DeactivateFan)
 {
-    auto fan_throttle = adjuster.adjust(50 * units::isq::si::thermodynamic_temperature_references::deg_C);
+    for(int i = 1; i<100; ++i)
+    {
+        throttle = adjuster.adjust(50 * units::isq::si::thermodynamic_temperature_references::deg_C);
+    }
 
-    EXPECT_EQ(fan_throttle, PiFan::FanThrottlePercent(0));
+    EXPECT_EQ(throttle, PiFan::FanThrottlePercent(0));
 }
 
 
 // Testing that after 70 degrees the fan is starting to work
 TEST_F(AdjusterTest, FanIsThrottling)
 {
-    auto fan_throttle = adjuster.adjust(75 * units::isq::si::thermodynamic_temperature_references::deg_C);
+    for(int i = 1; i<100; ++i)
+    {
+        throttle = adjuster.adjust(75 * units::isq::si::thermodynamic_temperature_references::deg_C);
+    }
 
-    EXPECT_GT(fan_throttle, PiFan::FanThrottlePercent(20));
+    EXPECT_GT(throttle, PiFan::FanThrottlePercent(10));
 }

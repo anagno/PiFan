@@ -24,6 +24,8 @@ private:
     enum class State { HIGH_TEMPERATURE, RAMP_FAN, KICK_FAN_ON, LOW_TEMPERATURE };
 
     State m_current_state;
+    units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> m_current_temperature;
+    FanThrottlePercent m_current_throttle;
     PiFanController m_controller;
 };
 
