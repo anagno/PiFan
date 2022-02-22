@@ -1,15 +1,16 @@
 #pragma once
 
-#include "PiFan/Service/PiFanController.h"
-#include "PiFan/Service/degree_celsius.h"
 #include "business_export.h"
+#include <PiFan/Service/PiFanController.h>
+#include <PiFan/Service/degree_celsius.h>
+#include <memory>
 
 namespace PiFan {
 
 class BUSINESS_EXPORT TemperatureAdjuster
 {
 public:
-    explicit TemperatureAdjuster(PiFanController &&controller);
+    explicit TemperatureAdjuster(std::shared_ptr<PiFanController> controller);
     ~TemperatureAdjuster() noexcept = default;
 
     TemperatureAdjuster(const TemperatureAdjuster &other) noexcept = delete;
@@ -26,7 +27,7 @@ private:
     State m_current_state;
     units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> m_average_temperature;
     FanThrottlePercent m_current_throttle;
-    PiFanController m_controller;
+    std::shared_ptr<PiFanController> m_controller;
 };
 
 }// namespace PiFan

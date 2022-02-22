@@ -1,7 +1,7 @@
 #include "TemperatureAdjuster.h"
 
-#include <units/quantity_cast.h>
 #include <units/math.h>
+#include <units/quantity_cast.h>
 
 #include <cstdlib>
 
@@ -14,11 +14,10 @@ constexpr auto HIGH_TEMP_FOR_RAMPING_FAN = 73.0 * units::isq::si::thermodynamic_
 constexpr auto TEMP_FOR_STARTING_THE_FAN = 70.0 * units::isq::si::thermodynamic_temperature_references::deg_C;
 constexpr auto TEMP_FOR_STOPPING_THE_FAN = 69.0 * units::isq::si::thermodynamic_temperature_references::deg_C;
 
-TemperatureAdjuster::TemperatureAdjuster(PiFanController &&controller)
+TemperatureAdjuster::TemperatureAdjuster(std::shared_ptr<PiFanController> controller)
   : m_current_state(State::LOW_TEMPERATURE),
     m_average_temperature(25 * units::isq::si::thermodynamic_temperature_references::deg_C),
-    m_current_throttle(FanThrottlePercent(0)),
-    m_controller(std::move(controller))
+    m_current_throttle(FanThrottlePercent(0)), m_controller(controller)
 {}
 
 FanThrottlePercent TemperatureAdjuster::adjust(
@@ -33,52 +32,52 @@ FanThrottlePercent TemperatureAdjuster::adjust(
         m_average_temperature = 0.99 * m_average_temperature + 0.01 * sensor_temperature;
     }
 
-    constexpr auto parse_state = [](const State &current_state,
-                         const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temp) {
-        if (temp >= THROTTLING_TEMP_FOR_RASP_PI) {
-            return State::HIGH_TEMPERATURE;
-        } else if (temp >= HIGH_TEMP_FOR_RAMPING_FAN) {
-            return State::RAMP_FAN;
-        } else if (temp >= TEMP_FOR_STARTING_THE_FAN) {
-            return State::KICK_FAN_ON;
-        } else {
-            if ((State::KICK_FAN_ON == current_state || State::RAMP_FAN == current_state)
-                && temp >= TEMP_FOR_STOPPING_THE_FAN) {
-                return State::KICK_FAN_ON;
-            } else {
-                return State::LOW_TEMPERATURE;
-            }
-        }
-    };
+    constexpr auto parse_state =
+      [](const State &current_state,
+        const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temp) {
+          if (temp >= THROTTLING_TEMP_FOR_RASP_PI) {
+              return State::HIGH_TEMPERATURE;
+          } else if (temp >= HIGH_TEMP_FOR_RAMPING_FAN) {
+              return State::RAMP_FAN;
+          } else if (temp >= TEMP_FOR_STARTING_THE_FAN) {
+              return State::KICK_FAN_ON;
+          } else {
+              if ((State::KICK_FAN_ON == current_state || State::RAMP_FAN == current_state)
+                  && temp >= TEMP_FOR_STOPPING_THE_FAN) {
+                  return State::KICK_FAN_ON;
+              } else {
+                  return State::LOW_TEMPERATURE;
+              }
+          }
+      };
 
     auto new_state = parse_state(m_current_state, m_average_temperature);
 
-    constexpr auto set_throttle = [](const State &state,
-                          const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temp) {
-        switch (state) {
-        case State::HIGH_TEMPERATURE: {
-            return FanThrottlePercent(100);
-        }
-        case State::RAMP_FAN: {
-            return units::quantity_cast<FanThrottlePercent>(
-              (temp - TEMP_FOR_STOPPING_THE_FAN) / (THROTTLING_TEMP_FOR_RASP_PI - TEMP_FOR_STOPPING_THE_FAN));
-        }
-        case State::KICK_FAN_ON: {
-            return FanThrottlePercent(20);
-        }
-        case State::LOW_TEMPERATURE:
-            [[fallthrough]];
-        default: {
-            return FanThrottlePercent(0);
-        }
-        }
-    };
+    constexpr auto set_throttle =
+      [](const State &state, const units::isq::si::thermodynamic_temperature<units::isq::si::degree_celsius> &temp) {
+          switch (state) {
+          case State::HIGH_TEMPERATURE: {
+              return FanThrottlePercent(100);
+          }
+          case State::RAMP_FAN: {
+              return units::quantity_cast<FanThrottlePercent>(
+                (temp - TEMP_FOR_STOPPING_THE_FAN) / (THROTTLING_TEMP_FOR_RASP_PI - TEMP_FOR_STOPPING_THE_FAN));
+          }
+          case State::KICK_FAN_ON: {
+              return FanThrottlePercent(20);
+          }
+          case State::LOW_TEMPERATURE:
+              [[fallthrough]];
+          default: {
+              return FanThrottlePercent(0);
+          }
+          }
+      };
 
     auto new_throttle = set_throttle(new_state, m_average_temperature);
-    if(units::abs(new_throttle - m_current_throttle) > FanThrottlePercent(1))
-    {
+    if (units::abs(new_throttle - m_current_throttle) > FanThrottlePercent(1)) {
         m_current_throttle = new_throttle;
-        m_controller.setSpeed(m_current_throttle);
+        m_controller->setSpeed(m_current_throttle);
     }
 
     m_current_state = new_state;

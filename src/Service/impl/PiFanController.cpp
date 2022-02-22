@@ -6,6 +6,7 @@
 #include <limits>
 #include <stdexcept>
 
+
 namespace {
 
 constexpr uint32_t MAX_FAN = 480;
@@ -15,43 +16,39 @@ constexpr uint32_t MAX_FAN = 480;
 namespace PiFan {
 
 
+std::shared_ptr<PiFanController> PiFanController::create()
+{
+    auto instance = m_instance.lock();
+    if (!instance) {
+        instance = std::shared_ptr<PiFanController>(new PiFanController());
+        m_instance = instance;
+    }
+
+    return instance;
+}
+
 PiFanController::PiFanController()
 {
-    if (m_counter == 0) {
 #ifdef MOCK_BCM2835
-        bcm2835_set_debug(1);
+    bcm2835_set_debug(1);
 #endif
-        if (!bcm2835_init()) throw std::runtime_error("Unable to initialize bcm2835");
+    if (!bcm2835_init()) throw std::runtime_error("Unable to initialize bcm2835");
 
-        // two exposed GPIO pins are capable of hardware PWM (GPIO 13 and GPIO 18)
-        // We use them both, so the user can connect his fan to any of these two pins
-        bcm2835_gpio_fsel(13, BCM2835_GPIO_FSEL_ALT0);
-        bcm2835_gpio_fsel(18, BCM2835_GPIO_FSEL_ALT5);
+    // two exposed GPIO pins are capable of hardware PWM (GPIO 13 and GPIO 18)
+    // We use them both, so the user can connect his fan to any of these two pins
+    bcm2835_gpio_fsel(13, BCM2835_GPIO_FSEL_ALT0);
+    bcm2835_gpio_fsel(18, BCM2835_GPIO_FSEL_ALT5);
 
-        bcm2835_pwm_set_clock(BCM2835_PWM_CLOCK_DIVIDER_2);
-        bcm2835_pwm_set_mode(1, 1, 1);
-        bcm2835_pwm_set_range(1, MAX_FAN);
+    bcm2835_pwm_set_clock(BCM2835_PWM_CLOCK_DIVIDER_2);
+    bcm2835_pwm_set_mode(1, 1, 1);
+    bcm2835_pwm_set_range(1, MAX_FAN);
 
-        bcm2835_pwm_set_mode(0, 1, 1);
-        bcm2835_pwm_set_range(0, MAX_FAN);
-        setSpeed(FanThrottlePercent(0));
-    }
-    ++m_counter;
+    bcm2835_pwm_set_mode(0, 1, 1);
+    bcm2835_pwm_set_range(0, MAX_FAN);
+    setSpeed(FanThrottlePercent(0));
 }
 
-PiFanController::PiFanController(PiFanController &&) noexcept { ++m_counter; }
-
-PiFanController &PiFanController::operator=(PiFanController &&) noexcept
-{
-    ++m_counter;
-    return *this;
-}
-
-PiFanController::~PiFanController() noexcept
-{
-    --m_counter;
-    if (0 == m_counter) { bcm2835_close(); }
-}
+PiFanController::~PiFanController() noexcept { bcm2835_close(); }
 
 void PiFanController::setSpeed(FanThrottlePercent throttle)
 {

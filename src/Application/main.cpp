@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
     metric_exposer.RegisterCollectable(metric_registry);
 
-    auto adjuster = PiFan::TemperatureAdjuster{ PiFan::PiFanController{} };
+    auto adjuster = PiFan::TemperatureAdjuster{ PiFan::PiFanController::create() };
 
     while (true) {
         auto temperature = PiFan::getCurrentCPUTemperature();
